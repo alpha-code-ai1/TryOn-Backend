@@ -10,4 +10,5 @@ COPY . .
 # Create uploads directory
 RUN mkdir -p uploads
 
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "app:app"] 
+# Use shell form to allow environment variable substitution
+CMD gunicorn --bind 0.0.0.0:$PORT app:app 

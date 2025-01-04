@@ -25,6 +25,9 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"]
 )
 
+# Get API key from environment variable with a default value for development
+API_KEY = os.environ.get('API_KEY', 'default-development-key')
+
 def image_to_base64(image_path):
     """Convert image to base64 encoded string"""
     try:
@@ -39,10 +42,11 @@ def index():
     return "Virtual Try-On Backend is running! Use the /tryon endpoint to make predictions."
 
 @app.route('/tryon', methods=['POST'])
+@limiter.limit("50 per hour")  # Add rate limiting
 def try_on():
     # Add API key validation
     api_key = request.headers.get('X-API-Key')
-    if not api_key or api_key != os.environ.get('API_KEY'):
+    if not api_key or api_key != API_KEY:
         return jsonify({"error": "Invalid API key"}), 401
     
     try:
